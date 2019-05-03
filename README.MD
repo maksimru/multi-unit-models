@@ -1,6 +1,6 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/maksimru/multi-unit-models/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/maksimru/multi-unit-models/?branch=master)
 [![codecov](https://codecov.io/gh/maksimru/multi-unit-models/branch/master/graph/badge.svg?token=cvgyk9oWEo)](https://codecov.io/gh/maksimru/multi-unit-models)
-[![CircleCI](https://circleci.com/gh/maksimru/multi-unit-models.svg?style=svg&circle-token=a671c2c3fbc31884c4613b6325b09a4cdabd1d70)](https://circleci.com/gh/maksimru/multi-unit-models)
+[![CircleCI](https://circleci.com/gh/maksimru/multi-unit-models.svg?style=svg)](https://circleci.com/gh/maksimru/multi-unit-models)
 
 # Adds easy ability to store and manipulate multi-units data
 
