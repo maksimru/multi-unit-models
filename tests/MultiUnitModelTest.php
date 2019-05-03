@@ -20,8 +20,8 @@ class MultiUnitModelTest extends TestCase
     private function createStubModel()
     {
         $model = Vehicle::create([
-            'name' => 'test',
-            'height' => '0.5',
+            'name'                  => 'test',
+            'height'                => '0.5',
             'fuel_consumption_city' => '5',
         ]);
 
@@ -84,9 +84,9 @@ class MultiUnitModelTest extends TestCase
          * @var $model Vehicle
          */
         $model = Vehicle::create([
-            'name' => 'test',
-            'height_units' => 'mi',
-            'height' => '1',
+            'name'                  => 'test',
+            'height_units'          => 'mi',
+            'height'                => '1',
             'fuel_consumption_city' => '5',
         ]);
         $this->assertInstanceOf(Vehicle::class, $model);
@@ -280,16 +280,16 @@ class MultiUnitModelTest extends TestCase
         $app['config']->set('database.default', 'testing');
         if (!$app['config']->has('database.connections.testing')) {
             $app['config']->set('database.connections.testing', [
-                'driver' => env('DB_DRIVER', 'sqlite'),
-                'database' => env('DB_DATABASE', __DIR__.'/database/'),
-                'prefix' => '',
-                'username' => env('DB_USERNAME', ''),
-                'password' => env('DB_PASSWORD', ''),
-                'charset' => 'utf8',
+                'driver'    => env('DB_DRIVER', 'sqlite'),
+                'database'  => env('DB_DATABASE', __DIR__.'/database/'),
+                'prefix'    => '',
+                'username'  => env('DB_USERNAME', ''),
+                'password'  => env('DB_PASSWORD', ''),
+                'charset'   => 'utf8',
                 'collation' => 'utf8_unicode_ci',
-                'host' => env('DB_HOST'),
-                'port' => env('DB_PORT'),
-                'modes' => [
+                'host'      => env('DB_HOST'),
+                'port'      => env('DB_PORT'),
+                'modes'     => [
                     'STRICT_TRANS_TABLES',
                     'NO_ZERO_IN_DATE',
                     'NO_ZERO_DATE',

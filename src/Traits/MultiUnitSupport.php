@@ -134,24 +134,25 @@ trait MultiUnitSupport
     /**
      * @param $field
      *
-     * @return AbstractUnit[]
-     *
      * @throws NotSupportedMultiUnitField
+     *
+     * @return AbstractUnit[]
      */
     public function getMultiUnitFieldSupportedUnits($field)
     {
         if ($this->isMultiUnitField($field)) {
             return $this->getMultiUnitColumns()[$field]['supported_units'];
         }
+
         throw new NotSupportedMultiUnitField($field);
     }
 
     /**
      * @param $field
      *
-     * @return AbstractUnit
-     *
      * @throws NotSupportedMultiUnitField
+     *
+     * @return AbstractUnit
      */
     public function getMultiUnitFieldDefaultUnit($field)
     {
@@ -160,6 +161,7 @@ trait MultiUnitSupport
 
             return new $unitClass();
         }
+
         throw new NotSupportedMultiUnitField($field);
     }
 
@@ -167,9 +169,9 @@ trait MultiUnitSupport
      * @param                   $field
      * @param AbstractUnit|null $unit
      *
-     * @return mixed
-     *
      * @throws NotSupportedMultiUnitField
+     *
+     * @return mixed
      */
     public function getMultiUnitFieldValue($field, AbstractUnit $unit = null)
     {
@@ -185,9 +187,10 @@ trait MultiUnitSupport
 
                 return ($this->getMultiUnitFieldDefaultUnit($field)->setValue($this->{$field}))->as(new $unit());
             } else {
-                return null;
+                return;
             }
         }
+
         throw new NotSupportedMultiUnitField($field);
     }
 
@@ -199,9 +202,9 @@ trait MultiUnitSupport
     /**
      * @param $field
      *
-     * @return AbstractUnit
-     *
      * @throws NotSupportedMultiUnitField
+     *
+     * @return AbstractUnit
      */
     protected function getMultiUnitFieldUnit($field)
     {
@@ -266,9 +269,9 @@ trait MultiUnitSupport
      * @param string $key
      * @param mixed  $value
      *
-     * @return mixed
-     *
      * @throws NotSupportedMultiUnitField
+     *
+     * @return mixed
      */
     protected function setMutatedAttributeValue($key, $value)
     {
@@ -288,9 +291,9 @@ trait MultiUnitSupport
      * @param $field
      * @param $value
      *
-     * @return mixed
-     *
      * @throws NotSupportedMultiUnitField
+     *
+     * @return mixed
      */
     private function processMultiUnitFieldChanges($field, $value)
     {
@@ -340,9 +343,9 @@ trait MultiUnitSupport
      * @param string $key
      * @param mixed  $value
      *
-     * @return mixed
-     *
      * @throws NotSupportedMultiUnitField
+     *
+     * @return mixed
      */
     public function mutateAttribute($key, $value)
     {

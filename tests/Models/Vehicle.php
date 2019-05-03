@@ -24,7 +24,7 @@ class Vehicle extends Model
             //column name
             'height' => [
                 //default unit (value will be stored in DB in specified default units)
-                'default_unit' => Kilometre::class,
+                'default_unit'    => Kilometre::class,
                 'supported_units' => [
                     Kilometre::class,
                     Mile::class,
@@ -32,7 +32,7 @@ class Vehicle extends Model
             ],
             'fuel_consumption_city' => [
                 //default unit (value will be stored in DB in specified default units)
-                'default_unit' => LitrePer100Kilometres::class,
+                'default_unit'    => LitrePer100Kilometres::class,
                 'supported_units' => [
                     LitrePer100Kilometres::class,
                     KilometrePerLitre::class,
