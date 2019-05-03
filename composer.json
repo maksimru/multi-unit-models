@@ -1,0 +1,67 @@
+{
+  "name": "maksimru/multi-unit-models",
+  "description": "Allows to easy and safely store model attributes in different units",
+  "keywords": [
+    "laravel",
+    "eloquent",
+    "model",
+    "units",
+    "unit"
+  ],
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Maksim Martianov",
+      "email": "maxmtmn@gmail.com"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/maksimru/unit-converter"
+    }
+  ],
+  "require": {
+    "php": ">=7",
+    "ext-json": "*",
+    "illuminate/cache": "^5.6",
+    "illuminate/contracts": "^5.6",
+    "illuminate/queue": "^5.6",
+    "illuminate/redis": "^5.6",
+    "illuminate/session": "^5.6",
+    "illuminate/support": "^5.6",
+    "jordanbrauer/unit-converter": "dev-fix/fuel-economy-units"
+  },
+  "require-dev": {
+    "laravel/framework": "^5.6",
+    "mockery/mockery": "0.9.*",
+    "fzaninotto/faker": "~1.4",
+    "phpunit/phpunit": "7",
+    "barryvdh/laravel-debugbar": "^3.1",
+    "orchestra/testbench": "~3.6",
+    "orchestra/testbench-browser-kit": "~3.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "MaksimM\\MultiUnitModels\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "MaksimM\\MultiUnitModels\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "MaksimM\\MultiUnitModels\\MultiUnitModelsServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

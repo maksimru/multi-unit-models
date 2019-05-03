@@ -1,0 +1,11 @@
+build/
+docs/
+vendor/
+old/
+composer.phar
+composer.lock
+phpspec.yml
+phpunit.xml
+.phpstorm.meta.php
+_ide_helper.php
+.idea
