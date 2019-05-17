@@ -63,12 +63,24 @@ trait MultiUnitSupport
              * @var Model|MultiUnitSupport $model
              */
             foreach ($model->getMultiUnitColumns() as $unitBasedColumn => $options) {
-                $model->{$unitBasedColumn.$model->getUnitConversionDataPostfix()} = json_encode($model->calculateMultiUnitConversionData($model->attributes[$unitBasedColumn], $model->getMultiUnitFieldUnit($unitBasedColumn), $options['supported_units']));
-                $model->{$unitBasedColumn} = $model->processMultiUnitFieldChanges($unitBasedColumn, $model->{$unitBasedColumn});
+                if(isset($model->attributes[$unitBasedColumn])) {
+                    $model->{$unitBasedColumn.$model->getUnitConversionDataPostfix()} = json_encode(
+                        $model->calculateMultiUnitConversionData(
+                            $model->attributes[$unitBasedColumn],
+                            $model->getMultiUnitFieldUnit($unitBasedColumn),
+                            $options['supported_units']
+                        )
+                    );
+                    $model->{$unitBasedColumn} = $model->processMultiUnitFieldChanges(
+                        $unitBasedColumn,
+                        $model->{$unitBasedColumn}
+                    );
+                }
             }
             //prevent saving of unit columns
             foreach ($model->getUnitConversionUnitColumns() as $unitColumn) {
-                unset($model->attributes[$unitColumn]);
+                if(isset($model->attributes[$unitColumn]))
+                    unset($model->attributes[$unitColumn]);
             }
         });
         static::updating(function ($model) {
