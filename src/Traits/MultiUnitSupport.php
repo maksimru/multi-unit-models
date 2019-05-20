@@ -197,8 +197,7 @@ trait MultiUnitSupport
                 if (!is_null($existingConversionData) && !is_null($existingConversionData->{$unit->getSymbol()})) {
                     return $existingConversionData->{$unit->getSymbol()};
                 }
-
-                return ($this->getMultiUnitFieldDefaultUnit($field)->setValue($this->{$field}))->as(new $unit());
+                return ($this->getMultiUnitFieldDefaultUnit($field)->setValue($this->{$field} ?? $this->attributes[$field]))->as(new $unit());
             } else {
                 return;
             }
