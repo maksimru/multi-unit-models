@@ -63,7 +63,7 @@ trait MultiUnitSupport
              * @var Model|MultiUnitSupport $model
              */
             foreach ($model->getMultiUnitColumns() as $unitBasedColumn => $options) {
-                if(isset($model->attributes[$unitBasedColumn])) {
+                if (isset($model->attributes[$unitBasedColumn])) {
                     $model->{$unitBasedColumn.$model->getUnitConversionDataPostfix()} = json_encode(
                         $model->calculateMultiUnitConversionData(
                             $model->attributes[$unitBasedColumn],
@@ -79,8 +79,9 @@ trait MultiUnitSupport
             }
             //prevent saving of unit columns
             foreach ($model->getUnitConversionUnitColumns() as $unitColumn) {
-                if(isset($model->attributes[$unitColumn]))
+                if (isset($model->attributes[$unitColumn])) {
                     unset($model->attributes[$unitColumn]);
+                }
             }
         });
         static::updating(function ($model) {
