@@ -18,7 +18,7 @@ class Vehicle extends Model
     protected $primaryKey = 'vehicle_id';
     protected $table = 'vehicles';
 
-    protected function getMultiUnitColumns()
+    public function getMultiUnitColumns()
     {
         return [
             //column name

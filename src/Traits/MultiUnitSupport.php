@@ -139,7 +139,7 @@ trait MultiUnitSupport
     /**
      * @return array
      */
-    protected function getMultiUnitColumns()
+    public function getMultiUnitColumns()
     {
         return $this->multiUnitColumns;
     }
