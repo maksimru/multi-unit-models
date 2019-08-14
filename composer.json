@@ -25,7 +25,7 @@
     "illuminate/redis": "^5.6",
     "illuminate/session": "^5.6",
     "illuminate/support": "^5.6",
-    "jordanbrauer/unit-converter": "dev-master"
+    "jordanbrauer/unit-converter": "dev-master#5152dfce921133bf3be6bdf2c445208d978a498f"
   },
   "require-dev": {
     "laravel/framework": "^5.6",
