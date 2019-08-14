@@ -179,6 +179,47 @@ trait MultiUnitSupport
     }
 
     /**
+     * @param           $field
+     * @param string    $unit
+     *
+     * @throws NotSupportedMultiUnitField
+     *
+     * @return mixed
+     */
+    public function getMultiUnitFieldValueByUnitName($field, $unit = null)
+    {
+        if ($this->isMultiUnitField($field)) {
+            if (isset($this->{$field})) {
+                if (is_null($unit)) {
+                    $unit = $this->getMultiUnitFieldUnit($field);
+                } else {
+                    foreach ($this->getMultiUnitFieldSupportedUnits($field) as $unitClass) {
+                        /**
+                         * @var AbstractUnit $unit
+                         */
+                        $supportedUnit = new $unitClass();
+                        if (strtolower($supportedUnit->getSymbol()) == strtolower($unit)) {
+                            $unit = $supportedUnit;
+                            break;
+                        }
+                    }
+                }
+                if(is_string($unit))
+                    throw new NotSupportedMultiUnitField($field);
+                $existingConversionData = $this->getMultiUnitExistingConversionData($field);
+                if (!is_null($existingConversionData) && !is_null($existingConversionData->{$unit->getSymbol()})) {
+                    return $existingConversionData->{$unit->getSymbol()};
+                }
+                return ($this->getMultiUnitFieldDefaultUnit($field)->setValue($this->{$field} ?? $this->attributes[$field]))->as(new $unit());
+            } else {
+                return;
+            }
+        }
+
+        throw new NotSupportedMultiUnitField($field);
+    }
+
+    /**
      * @param                   $field
      * @param AbstractUnit|null $unit
      *

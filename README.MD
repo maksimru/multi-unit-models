@@ -150,3 +150,8 @@ $model->getMultiUnitFieldDefaultUnit('height')->getSymbol()
 $model->getMultiUnitFieldValue('height',(new Mile()))
 //return specific field in specified unit
 ```
+
+```php
+$model->getMultiUnitFieldValueByUnitName('height','mi')
+//return specific field in specified unit
+```

@@ -244,6 +244,34 @@ class MultiUnitModelTest extends TestCase
     /** @test
      *  @throws Exception
      */
+    public function getMultiUnitFieldValueByUnitNameMlTest()
+    {
+        $model = $this->createStubModel();
+        $this->assertEquals(0.31, $model->getMultiUnitFieldValueByUnitName('height', 'mi'));
+    }
+
+    /** @test
+     *  @throws Exception
+     */
+    public function getMultiUnitFieldValueByUnitNameKmTest()
+    {
+        $model = $this->createStubModel();
+        $this->assertEquals(0.5, $model->getMultiUnitFieldValueByUnitName('height', 'km'));
+    }
+
+    /** @test
+     * @throws Exception
+     */
+    public function exceptionNotSupportedMultiUnitFieldIngetMultiUnitFieldValueByUnitNameXxTest()
+    {
+        $model = $this->createStubModel();
+        $this->expectException(NotSupportedMultiUnitField::class);
+        $this->assertEquals(1, $model->getMultiUnitFieldValueByUnitName('height', 'xx'));
+    }
+
+    /** @test
+     *  @throws Exception
+     */
     public function getMultiUnitFieldSupportedUnitsTest()
     {
         $model = $this->createStubModel();
