@@ -179,8 +179,8 @@ trait MultiUnitSupport
     }
 
     /**
-     * @param           $field
-     * @param string    $unit
+     * @param        $field
+     * @param string $unit
      *
      * @throws NotSupportedMultiUnitField
      *
@@ -204,12 +204,14 @@ trait MultiUnitSupport
                         }
                     }
                 }
-                if(is_string($unit))
+                if (is_string($unit)) {
                     throw new NotSupportedMultiUnitField($field);
+                }
                 $existingConversionData = $this->getMultiUnitExistingConversionData($field);
                 if (!is_null($existingConversionData) && !is_null($existingConversionData->{$unit->getSymbol()})) {
                     return $existingConversionData->{$unit->getSymbol()};
                 }
+
                 return ($this->getMultiUnitFieldDefaultUnit($field)->setValue($this->{$field} ?? $this->attributes[$field]))->as(new $unit());
             } else {
                 return;
@@ -238,6 +240,7 @@ trait MultiUnitSupport
                 if (!is_null($existingConversionData) && !is_null($existingConversionData->{$unit->getSymbol()})) {
                     return $existingConversionData->{$unit->getSymbol()};
                 }
+
                 return ($this->getMultiUnitFieldDefaultUnit($field)->setValue($this->{$field} ?? $this->attributes[$field]))->as(new $unit());
             } else {
                 return;
