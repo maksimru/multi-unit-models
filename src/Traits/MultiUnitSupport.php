@@ -416,6 +416,7 @@ trait MultiUnitSupport
             if (parent::hasGetMutator($key)) {
                 return parent::mutateAttribute($key, $value);
             }
+
             return $value;
         }
 
