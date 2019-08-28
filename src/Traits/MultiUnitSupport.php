@@ -335,6 +335,10 @@ trait MultiUnitSupport
             $value = $this->processMultiUnitFieldChanges($key, $value);
             $this->attributes[$key] = $value;
 
+            if (parent::hasSetMutator($key)) {
+                return parent::setMutatedAttributeValue($key, $value);
+            }
+
             return $value;
         }
 
@@ -408,7 +412,11 @@ trait MultiUnitSupport
         if ($this->isMultiUnitField($key)) {
             $requestedUnit = $this->getMultiUnitFieldUnit($key);
 
-            return $this->getMultiUnitFieldValue($key, new $requestedUnit());
+            $value = $this->getMultiUnitFieldValue($key, new $requestedUnit());
+            if (parent::hasGetMutator($key)) {
+                return parent::mutateAttribute($key, $value);
+            }
+            return $value;
         }
 
         return parent::mutateAttribute($key, $value);
