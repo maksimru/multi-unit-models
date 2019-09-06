@@ -142,7 +142,7 @@ $model->getMultiUnitFieldSupportedUnits('height')
 ```
 
 ```php
-$model->getMultiUnitFieldDefaultUnit('height')->getSymbol()
+$model->getMultiUnitFieldDefaultUnit('height')->getId()
 //return default unit as string: km
 ```
 

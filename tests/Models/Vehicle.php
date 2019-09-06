@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use MaksimM\MultiUnitModels\Traits\MultiUnitSupport;
 use UnitConverter\Unit\FuelEconomy\KilometrePerLitre;
 use UnitConverter\Unit\FuelEconomy\LitrePer100Kilometres;
-use UnitConverter\Unit\FuelEconomy\MilesPerGallon;
+use UnitConverter\Unit\FuelEconomy\MilesPerGallonImperial;
+use UnitConverter\Unit\FuelEconomy\MilesPerGallonUS;
 use UnitConverter\Unit\Length\Kilometre;
 use UnitConverter\Unit\Length\Mile;
 
@@ -36,7 +37,8 @@ class Vehicle extends Model
                 'supported_units' => [
                     LitrePer100Kilometres::class,
                     KilometrePerLitre::class,
-                    MilesPerGallon::class,
+                    MilesPerGallonUS::class,
+                    MilesPerGallonImperial::class,
                 ],
             ],
         ];

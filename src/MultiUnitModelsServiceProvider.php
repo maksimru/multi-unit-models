@@ -40,7 +40,7 @@ class MultiUnitModelsServiceProvider extends ServiceProvider
                  */
                 $unit = new $unitClass();
 
-                return $unit->getSymbol();
+                return $unit->getId();
             }, $model->getMultiUnitFieldSupportedUnits(substr($attribute, 0, -1 * strlen($model->getUnitAttributePostfix())))));
         });
     }

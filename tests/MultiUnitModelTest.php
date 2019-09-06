@@ -106,9 +106,9 @@ class MultiUnitModelTest extends TestCase
     {
         $model = $this->createStubModel();
         $this->assertEquals(0.5, $model->height);
-        $this->assertEquals('km', $model->getMultiUnitFieldDefaultUnit('height')->getSymbol());
+        $this->assertEquals('km', $model->getMultiUnitFieldDefaultUnit('height')->getId());
         $this->assertEquals(5, $model->fuel_consumption_city);
-        $this->assertEquals('L/100km', $model->getMultiUnitFieldDefaultUnit('fuel_consumption_city')->getSymbol());
+        $this->assertEquals('L/100km', $model->getMultiUnitFieldDefaultUnit('fuel_consumption_city')->getId());
     }
 
     /** @test
@@ -229,7 +229,7 @@ class MultiUnitModelTest extends TestCase
     public function getMultiUnitFieldDefaultUnitTest()
     {
         $model = $this->createStubModel();
-        $this->assertEquals('km', $model->getMultiUnitFieldDefaultUnit('height')->getSymbol());
+        $this->assertEquals('km', $model->getMultiUnitFieldDefaultUnit('height')->getId());
     }
 
     /** @test

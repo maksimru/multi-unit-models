@@ -16,6 +16,12 @@
       "email": "maxmtmn@gmail.com"
     }
   ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/maksimru/unit-converter.git"
+    }
+  ],
   "require": {
     "php": ">=7",
     "ext-json": "*",
@@ -25,7 +31,7 @@
     "illuminate/redis": "^5.6",
     "illuminate/session": "^5.6",
     "illuminate/support": "^5.6",
-    "jordanbrauer/unit-converter": "dev-master#5152dfce921133bf3be6bdf2c445208d978a498f"
+    "jordanbrauer/unit-converter": "dev-master#dace9ae6f6a325b71f7e9a06629a9309dc89dbdf"
   },
   "require-dev": {
     "laravel/framework": "^5.6",

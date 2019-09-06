@@ -109,7 +109,7 @@ trait MultiUnitSupport
              * @var AbstractUnit $requiredUnit
              */
             $requiredUnit = new $requiredUnitClass();
-            $conversionData[$requiredUnit->getSymbol()] = (new $unit($value))->as($requiredUnit);
+            $conversionData[$requiredUnit->getId()] = (new $unit($value))->as($requiredUnit);
         }
 
         return $conversionData;
@@ -198,7 +198,7 @@ trait MultiUnitSupport
                          * @var AbstractUnit $unit
                          */
                         $supportedUnit = new $unitClass();
-                        if (strtolower($supportedUnit->getSymbol()) == strtolower($unit)) {
+                        if (strtolower($supportedUnit->getId()) == strtolower($unit)) {
                             $unit = $supportedUnit;
                             break;
                         }
@@ -208,8 +208,8 @@ trait MultiUnitSupport
                     throw new NotSupportedMultiUnitField($field);
                 }
                 $existingConversionData = $this->getMultiUnitExistingConversionData($field);
-                if (!is_null($existingConversionData) && !is_null($existingConversionData->{$unit->getSymbol()})) {
-                    return $existingConversionData->{$unit->getSymbol()};
+                if (!is_null($existingConversionData) && !is_null($existingConversionData->{$unit->getId()})) {
+                    return $existingConversionData->{$unit->getId()};
                 }
 
                 return ($this->getMultiUnitFieldDefaultUnit($field)->setValue($this->{$field} ?? $this->attributes[$field]))->as(new $unit());
@@ -237,8 +237,8 @@ trait MultiUnitSupport
                     $unit = $this->getMultiUnitFieldUnit($field);
                 }
                 $existingConversionData = $this->getMultiUnitExistingConversionData($field);
-                if (!is_null($existingConversionData) && !is_null($existingConversionData->{$unit->getSymbol()})) {
-                    return $existingConversionData->{$unit->getSymbol()};
+                if (!is_null($existingConversionData) && !is_null($existingConversionData->{$unit->getId()})) {
+                    return $existingConversionData->{$unit->getId()};
                 }
 
                 return ($this->getMultiUnitFieldDefaultUnit($field)->setValue($this->{$field} ?? $this->attributes[$field]))->as(new $unit());
@@ -270,7 +270,7 @@ trait MultiUnitSupport
                  * @var AbstractUnit $unit
                  */
                 $unit = new $unitClass();
-                if (strtolower($unit->getSymbol()) == strtolower($this->{$field.$this->getUnitAttributePostfix()})) {
+                if (strtolower($unit->getId()) == strtolower($this->{$field.$this->getUnitAttributePostfix()})) {
                     return $unit;
                 }
             }
@@ -289,7 +289,7 @@ trait MultiUnitSupport
 
     protected function setMultiUnitFieldUnit($field, AbstractUnit $unit)
     {
-        $this->{$field.$this->getUnitAttributePostfix()} = $unit->getSymbol();
+        $this->{$field.$this->getUnitAttributePostfix()} = $unit->getId();
         $this->forgetMultiUnitFieldUnitInput($field);
     }
 
@@ -361,14 +361,14 @@ trait MultiUnitSupport
         if (!is_null($existingConversionData)) {
             $inputUnit = $this->getMultiUnitFieldUnit($field);
             //change existing value only in case if new value doesn't match with stored conversion table or not exists
-            if (!isset($existingConversionData->{$inputUnit->getSymbol()}) || $value != $existingConversionData->{$inputUnit->getSymbol()}) {
+            if (!isset($existingConversionData->{$inputUnit->getId()}) || $value != $existingConversionData->{$inputUnit->getId()}) {
                 $this->resetMultiUnitFieldUnit($field);
 
                 return (new $inputUnit($value))->as($this->getMultiUnitFieldDefaultUnit($field));
-            } elseif ($value == $existingConversionData->{$inputUnit->getSymbol()}) {
+            } elseif ($value == $existingConversionData->{$inputUnit->getId()}) {
                 //forget changes if value actually isn't changed
                 $this->resetMultiUnitFieldUnit($field);
-                $originalValue = $existingConversionData->{$this->getMultiUnitFieldDefaultUnit($field)->getSymbol()};
+                $originalValue = $existingConversionData->{$this->getMultiUnitFieldDefaultUnit($field)->getId()};
                 $this->attributes[$field] = $originalValue;
                 $this->syncOriginalAttribute($field);
 
