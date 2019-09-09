@@ -219,15 +219,15 @@ trait MultiUnitSupport
                     break;
                 }
             }
-            if($found)
+            if ($found) {
                 $this->multiUnitSelectedUnits[$field] = $unitClass;
-            else
+            } else {
                 throw new NotSupportedMultiUnitFieldUnit($field, $unit);
-        }
-        else
+            }
+        } else {
             throw new NotSupportedMultiUnitField($field);
+        }
     }
-
 
     /**
      * @param        $field
