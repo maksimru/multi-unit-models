@@ -5,6 +5,7 @@ namespace MaksimM\MultiUnitModels\Traits;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use MaksimM\MultiUnitModels\Exceptions\NotSupportedMultiUnitField;
+use MaksimM\MultiUnitModels\Exceptions\NotSupportedMultiUnitFieldUnit;
 use UnitConverter\Unit\AbstractUnit;
 
 trait MultiUnitSupport
@@ -12,6 +13,7 @@ trait MultiUnitSupport
     protected $unitAttributePostfix = '_units';
     protected $unitConversionDataPostfix = '_ucd';
     protected $multiUnitColumns = [];
+    protected $multiUnitSelectedUnits = [];
 
     private function getUnitConversionDataColumns()
     {
@@ -179,6 +181,55 @@ trait MultiUnitSupport
     }
 
     /**
+     * @param $field
+     *
+     * @throws NotSupportedMultiUnitField
+     *
+     * @return AbstractUnit
+     */
+    public function getMultiUnitFieldSelectedUnit($field)
+    {
+        if ($this->isMultiUnitField($field)) {
+            $unitClass = $this->multiUnitSelectedUnits[$field] ?? $this->getMultiUnitFieldDefaultUnit($field);
+
+            return new $unitClass();
+        }
+
+        throw new NotSupportedMultiUnitField($field);
+    }
+
+    /**
+     * @param $field
+     * @param string $unit
+     *
+     * @throws NotSupportedMultiUnitField
+     * @throws NotSupportedMultiUnitFieldUnit
+     */
+    public function setMultiUnitFieldSelectedUnit($field, $unit)
+    {
+        if ($this->isMultiUnitField($field)) {
+            $found = false;
+            foreach ($this->getMultiUnitFieldSupportedUnits($field) as $unitClass) {
+                /**
+                 * @var AbstractUnit $unit
+                 */
+                $supportedUnit = new $unitClass();
+                if (strtolower($supportedUnit->getId()) == strtolower($unit)) {
+                    $found = true;
+                    break;
+                }
+            }
+            if($found)
+                $this->multiUnitSelectedUnits[$field] = $unitClass;
+            else
+                throw new NotSupportedMultiUnitFieldUnit($field, $unit);
+        }
+        else
+            throw new NotSupportedMultiUnitField($field);
+    }
+
+
+    /**
      * @param        $field
      * @param string $unit
      *
@@ -276,7 +327,7 @@ trait MultiUnitSupport
             }
         }
 
-        return $this->getMultiUnitFieldDefaultUnit($field);
+        return $this->getMultiUnitFieldSelectedUnit($field);
     }
 
     protected function forgetMultiUnitFieldUnitInput($field)

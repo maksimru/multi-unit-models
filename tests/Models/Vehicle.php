@@ -8,6 +8,7 @@ use UnitConverter\Unit\FuelEconomy\KilometrePerLitre;
 use UnitConverter\Unit\FuelEconomy\LitrePer100Kilometres;
 use UnitConverter\Unit\FuelEconomy\MilesPerGallonImperial;
 use UnitConverter\Unit\FuelEconomy\MilesPerGallonUS;
+use UnitConverter\Unit\FuelEconomy\MilesPerLitre;
 use UnitConverter\Unit\Length\Kilometre;
 use UnitConverter\Unit\Length\Mile;
 
@@ -39,6 +40,7 @@ class Vehicle extends Model
                     KilometrePerLitre::class,
                     MilesPerGallonUS::class,
                     MilesPerGallonImperial::class,
+                    MilesPerLitre::class,
                 ],
             ],
         ];

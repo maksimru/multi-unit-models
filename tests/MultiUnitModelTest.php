@@ -118,6 +118,24 @@ class MultiUnitModelTest extends TestCase
      *
      *  @throws Exception
      */
+    public function validateCreatedModelTestUsingAnotherUnits()
+    {
+        $model = $this->createStubModel();
+        $model->setMultiUnitFieldSelectedUnit('height', 'mi');
+        $model->setMultiUnitFieldSelectedUnit('fuel_consumption_city', 'mpg');
+        $this->assertEquals(0.31, $model->height);
+        $this->assertEquals('mi', $model->getMultiUnitFieldSelectedUnit('height')->getId());
+        $this->assertEquals(47.04, $model->fuel_consumption_city);
+        $this->assertEquals('mpg', $model->getMultiUnitFieldSelectedUnit('fuel_consumption_city')->getId());
+    }
+
+    /** @test
+     *  @depends  modelCreationTest
+     *
+     *  @param  $model_id
+     *
+     *  @throws Exception
+     */
     public function validateHiddenFields()
     {
         $model = $this->createStubModel();
