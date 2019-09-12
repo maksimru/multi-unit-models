@@ -118,7 +118,7 @@ class MultiUnitModelTest extends TestCase
      *
      *  @throws Exception
      */
-    public function validateCreatedModelTestUsingAnotherUnits()
+    public function validateCreatedModelTestOutputUsingAnotherUnits()
     {
         $model = $this->createStubModel();
         $model->setMultiUnitFieldSelectedUnit('height', 'mi');
@@ -164,8 +164,29 @@ class MultiUnitModelTest extends TestCase
         $model->save();
         $this->assertEquals('test2', $model->name);
         $this->assertEquals(1, $model->height);
+        $this->assertEquals('km', $model->getMultiUnitFieldSelectedUnit('height')->getId());
         $this->assertEquals(0.62, $model->getMultiUnitFieldValue('height', (new Mile())));
         $this->assertEquals(1, $model->getMultiUnitFieldValue('height', (new Kilometre())));
+    }
+
+    /** @test
+     *  @depends  modelCreationTest
+     *
+     *  @param  $model_id
+     *
+     *  @throws Exception
+     */
+    public function validateModelAttributeUpdateSwitchingUnitsTest()
+    {
+        $model = $this->createStubModel();
+        $model->setMultiUnitFieldSelectedUnit('height', 'mi');
+        $model->height = 10;
+        $model->name = 'test2';
+        $model->save();
+        $this->assertEquals('test2', $model->name);
+        $this->assertEquals(10, $model->height);
+        $this->assertEquals('mi', $model->getMultiUnitFieldSelectedUnit('height')->getId());
+        $this->assertEquals(16.09, \DB::table('vehicles')->where($model->getKeyName(), '=', $model->getKey())->get()->first()->height);
     }
 
     /** @test

@@ -69,7 +69,7 @@ trait MultiUnitSupport
                     $model->{$unitBasedColumn.$model->getUnitConversionDataPostfix()} = json_encode(
                         $model->calculateMultiUnitConversionData(
                             $model->attributes[$unitBasedColumn],
-                            $model->getMultiUnitFieldUnit($unitBasedColumn),
+                            $model->getMultiUnitFieldUnit($unitBasedColumn, true),
                             $options['supported_units']
                         )
                     );
@@ -91,7 +91,13 @@ trait MultiUnitSupport
              * @var Model|MultiUnitSupport $model
              */
             foreach (Arr::only($model->getMultiUnitColumns(), array_keys($model->getDirty())) as $unitBasedColumn => $options) {
-                $model->{$unitBasedColumn.$model->getUnitConversionDataPostfix()} = json_encode($model->calculateMultiUnitConversionData($model->getDirty()[$unitBasedColumn], new $options['default_unit'](), $options['supported_units']));
+                $model->{$unitBasedColumn.$model->getUnitConversionDataPostfix()} = json_encode(
+                    $model->calculateMultiUnitConversionData(
+                        $model->getDirty()[$unitBasedColumn],
+                        $model->getMultiUnitFieldUnit($unitBasedColumn, true),
+                        $options['supported_units']
+                    )
+                );
             }
         });
     }
@@ -263,7 +269,7 @@ trait MultiUnitSupport
                     return $existingConversionData->{$unit->getId()};
                 }
 
-                return ($this->getMultiUnitFieldDefaultUnit($field)->setValue($this->{$field} ?? $this->attributes[$field]))->as(new $unit());
+                return ($this->getMultiUnitFieldSelectedUnit($field)->setValue($this->{$field} ?? $this->attributes[$field]))->as(new $unit());
             } else {
                 return;
             }
@@ -292,7 +298,7 @@ trait MultiUnitSupport
                     return $existingConversionData->{$unit->getId()};
                 }
 
-                return ($this->getMultiUnitFieldDefaultUnit($field)->setValue($this->{$field} ?? $this->attributes[$field]))->as(new $unit());
+                return ($this->getMultiUnitFieldSelectedUnit($field)->setValue($this->{$field} ?? $this->attributes[$field]))->as(new $unit());
             } else {
                 return;
             }
@@ -313,7 +319,7 @@ trait MultiUnitSupport
      *
      * @return AbstractUnit
      */
-    protected function getMultiUnitFieldUnit($field)
+    protected function getMultiUnitFieldUnit($field, $preferDefault = false)
     {
         if (isset($this->{$field.$this->getUnitAttributePostfix()})) {
             foreach ($this->getMultiUnitFieldSupportedUnits($field) as $unitClass) {
@@ -327,7 +333,7 @@ trait MultiUnitSupport
             }
         }
 
-        return $this->getMultiUnitFieldSelectedUnit($field);
+        return $preferDefault ? $this->getMultiUnitFieldDefaultUnit($field) : $this->getMultiUnitFieldSelectedUnit($field);
     }
 
     protected function forgetMultiUnitFieldUnitInput($field)
@@ -340,7 +346,9 @@ trait MultiUnitSupport
 
     protected function setMultiUnitFieldUnit($field, AbstractUnit $unit)
     {
-        $this->{$field.$this->getUnitAttributePostfix()} = $unit->getId();
+        if (isset($this->{$field.$this->getUnitAttributePostfix()})) {
+            $this->{$field.$this->getUnitAttributePostfix()} = $unit->getId();
+        }
         $this->forgetMultiUnitFieldUnitInput($field);
     }
 
@@ -351,7 +359,7 @@ trait MultiUnitSupport
      */
     protected function resetMultiUnitFieldUnit($field)
     {
-        $this->setMultiUnitFieldUnit($field, $this->getMultiUnitFieldDefaultUnit($field));
+        $this->setMultiUnitFieldUnit($field, $this->getMultiUnitFieldSelectedUnit($field));
     }
 
     /**
