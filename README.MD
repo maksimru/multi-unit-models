@@ -155,3 +155,8 @@ $model->getMultiUnitFieldValue('height',(new Mile()))
 $model->getMultiUnitFieldValueByUnitName('height','mi')
 //return specific field in specified unit
 ```
+
+```php
+$model->setMultiUnitFieldSelectedUnit('height', 'mi');
+//switch input and output units in real-time
+```
