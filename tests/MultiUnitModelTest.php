@@ -186,7 +186,7 @@ class MultiUnitModelTest extends TestCase
         $this->assertEquals('test2', $model->name);
         $this->assertEquals(10, $model->height);
         $this->assertEquals('mi', $model->getMultiUnitFieldSelectedUnit('height')->getId());
-        $this->assertEquals(16.09, \DB::table('vehicles')->where($model->getKeyName(),'=',$model->getKey())->get()->first()->height);
+        $this->assertEquals(16.09, \DB::table('vehicles')->where($model->getKeyName(), '=', $model->getKey())->get()->first()->height);
     }
 
     /** @test

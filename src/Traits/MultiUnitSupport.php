@@ -346,8 +346,9 @@ trait MultiUnitSupport
 
     protected function setMultiUnitFieldUnit($field, AbstractUnit $unit)
     {
-        if(isset($this->{$field.$this->getUnitAttributePostfix()}))
+        if (isset($this->{$field.$this->getUnitAttributePostfix()})) {
             $this->{$field.$this->getUnitAttributePostfix()} = $unit->getId();
+        }
         $this->forgetMultiUnitFieldUnitInput($field);
     }
 
