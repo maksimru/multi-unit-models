@@ -79,12 +79,7 @@ trait MultiUnitSupport
                     );
                 }
             }
-            //prevent saving of unit columns
-            foreach ($model->getUnitConversionUnitColumns() as $unitColumn) {
-                if (isset($model->attributes[$unitColumn])) {
-                    unset($model->attributes[$unitColumn]);
-                }
-            }
+            $model->forgetUnitsInput();
         });
         static::updating(function ($model) {
             /**
@@ -99,7 +94,17 @@ trait MultiUnitSupport
                     )
                 );
             }
+            $model->forgetUnitsInput();
         });
+    }
+
+    private function forgetUnitsInput(){
+        //prevent saving of unit columns
+        foreach ($this->getUnitConversionUnitColumns() as $unitColumn) {
+            if (isset($this->attributes[$unitColumn])) {
+                unset($this->attributes[$unitColumn]);
+            }
+        }
     }
 
     /**
