@@ -98,7 +98,8 @@ trait MultiUnitSupport
         });
     }
 
-    private function forgetUnitsInput(){
+    private function forgetUnitsInput()
+    {
         //prevent saving of unit columns
         foreach ($this->getUnitConversionUnitColumns() as $unitColumn) {
             if (isset($this->attributes[$unitColumn])) {
