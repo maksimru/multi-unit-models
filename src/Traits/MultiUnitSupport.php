@@ -112,10 +112,13 @@ trait MultiUnitSupport
      * @param AbstractUnit $unit
      * @param string[]     $requiredUnits
      *
-     * @return array
+     * @return array|null
      */
     private function calculateMultiUnitConversionData($value, AbstractUnit $unit, $requiredUnits)
     {
+        if(is_null($value))
+            return null;
+
         $conversionData = [];
         foreach ($requiredUnits as $requiredUnitClass) {
             /**
@@ -421,24 +424,28 @@ trait MultiUnitSupport
      */
     private function processMultiUnitFieldChanges($field, $value)
     {
-        $existingConversionData = $this->getMultiUnitExistingConversionData($field);
-        if (!is_null($existingConversionData)) {
-            $inputUnit = $this->getMultiUnitFieldUnit($field);
-            //change existing value only in case if new value doesn't match with stored conversion table or not exists
-            if (!isset($existingConversionData->{$inputUnit->getId()}) || $value != $existingConversionData->{$inputUnit->getId()}) {
-                $this->resetMultiUnitFieldUnit($field);
+        if(!is_null($value)) {
+            $existingConversionData = $this->getMultiUnitExistingConversionData($field);
+            if (!is_null($existingConversionData)) {
+                $inputUnit = $this->getMultiUnitFieldUnit($field);
+                //change existing value only in case if new value doesn't match with stored conversion table or not exists
+                if (!isset(
+                        $existingConversionData->{$inputUnit->getId()}
+                    ) || $value != $existingConversionData->{$inputUnit->getId()}) {
+                    $this->resetMultiUnitFieldUnit($field);
 
-                return (new $inputUnit($value))->as($this->getMultiUnitFieldDefaultUnit($field));
-            } elseif ($value == $existingConversionData->{$inputUnit->getId()}) {
-                //forget changes if value actually isn't changed
-                $this->resetMultiUnitFieldUnit($field);
-                $originalValue = $existingConversionData->{$this->getMultiUnitFieldDefaultUnit($field)->getId()};
-                $this->attributes[$field] = $originalValue;
-                $this->syncOriginalAttribute($field);
+                    return (new $inputUnit($value))->as($this->getMultiUnitFieldDefaultUnit($field));
+                } elseif ($value == $existingConversionData->{$inputUnit->getId()}) {
+                    //forget changes if value actually isn't changed
+                    $this->resetMultiUnitFieldUnit($field);
+                    $originalValue = $existingConversionData->{$this->getMultiUnitFieldDefaultUnit($field)->getId()};
+                    $this->attributes[$field] = $originalValue;
+                    $this->syncOriginalAttribute($field);
 
-                return $originalValue;
+                    return $originalValue;
+                }
+                $this->resetMultiUnitFieldUnit($field);
             }
-            $this->resetMultiUnitFieldUnit($field);
         }
 
         return $value;
