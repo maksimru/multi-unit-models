@@ -10,7 +10,9 @@ use UnitConverter\Unit\AbstractUnit;
 
 trait MultiUnitSupport
 {
-    protected $unitAttributePostfix = '_units';
+
+    use ModelConfiguration;
+
     protected $unitConversionDataPostfix = '_ucd';
     protected $multiUnitColumns = [];
     protected $multiUnitSelectedUnits = [];
@@ -20,41 +22,6 @@ trait MultiUnitSupport
         return array_map(function ($column) {
             return $column.$this->getUnitConversionDataPostfix();
         }, array_keys($this->getMultiUnitColumns()));
-    }
-
-    private function getUnitConversionUnitColumns()
-    {
-        return array_map(function ($column) {
-            return $column.$this->getUnitAttributePostfix();
-        }, array_keys($this->getMultiUnitColumns()));
-    }
-
-    /**
-     * Allows to set input units and process them before multi-unit field.
-     *
-     * @param array $attributes
-     *
-     * @return array
-     */
-    protected function fillableFromArray(array $attributes)
-    {
-        return array_merge(array_intersect_key($attributes, array_flip($this->getUnitConversionUnitColumns())), parent::fillableFromArray($attributes));
-    }
-
-    /**
-     * @return array
-     */
-    public function getFillable()
-    {
-        return array_merge($this->getUnitConversionDataColumns(), $this->getUnitConversionUnitColumns(), parent::getFillable());
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getHidden()
-    {
-        return array_merge(parent::getHidden(), $this->getUnitConversionDataColumns());
     }
 
     protected static function bootMultiUnitSupport()
@@ -69,7 +36,7 @@ trait MultiUnitSupport
                     $model->{$unitBasedColumn.$model->getUnitConversionDataPostfix()} = json_encode(
                         $model->calculateMultiUnitConversionData(
                             $model->attributes[$unitBasedColumn],
-                            $model->getMultiUnitFieldUnit($unitBasedColumn, true),
+                            $model->getMultiUnitFieldUnit($unitBasedColumn),
                             $options['supported_units']
                         )
                     );
@@ -79,7 +46,6 @@ trait MultiUnitSupport
                     );
                 }
             }
-            $model->forgetUnitsInput();
         });
         static::updating(function ($model) {
             /**
@@ -94,17 +60,7 @@ trait MultiUnitSupport
                     )
                 );
             }
-            $model->forgetUnitsInput();
         });
-    }
-
-    private function forgetUnitsInput(){
-        //prevent saving of unit columns
-        foreach ($this->getUnitConversionUnitColumns() as $unitColumn) {
-            if (isset($this->attributes[$unitColumn])) {
-                unset($this->attributes[$unitColumn]);
-            }
-        }
     }
 
     /**
@@ -134,14 +90,6 @@ trait MultiUnitSupport
     public function getMultiUnitExistingConversionData($field)
     {
         return json_decode($this->{$field.$this->getUnitConversionDataPostfix()} ?? null);
-    }
-
-    /**
-     * @return string
-     */
-    public function getUnitAttributePostfix()
-    {
-        return $this->unitAttributePostfix;
     }
 
     /**
@@ -329,168 +277,6 @@ trait MultiUnitSupport
      */
     protected function getMultiUnitFieldUnit($field, $preferDefault = false)
     {
-        if (isset($this->{$field.$this->getUnitAttributePostfix()})) {
-            foreach ($this->getMultiUnitFieldSupportedUnits($field) as $unitClass) {
-                /**
-                 * @var AbstractUnit $unit
-                 */
-                $unit = new $unitClass();
-                if (strtolower($unit->getId()) == strtolower($this->{$field.$this->getUnitAttributePostfix()})) {
-                    return $unit;
-                }
-            }
-        }
-
         return $preferDefault ? $this->getMultiUnitFieldDefaultUnit($field) : $this->getMultiUnitFieldSelectedUnit($field);
-    }
-
-    protected function forgetMultiUnitFieldUnitInput($field)
-    {
-        //prevent column_units to by saved to DB
-        if (isset($this->attributes[$field.$this->getUnitAttributePostfix()])) {
-            $this->syncOriginalAttribute($field.$this->getUnitAttributePostfix());
-        }
-    }
-
-    protected function setMultiUnitFieldUnit($field, AbstractUnit $unit)
-    {
-        if (isset($this->{$field.$this->getUnitAttributePostfix()})) {
-            $this->{$field.$this->getUnitAttributePostfix()} = $unit->getId();
-        }
-        $this->forgetMultiUnitFieldUnitInput($field);
-    }
-
-    /**
-     * @param $field
-     *
-     * @throws NotSupportedMultiUnitField
-     */
-    protected function resetMultiUnitFieldUnit($field)
-    {
-        $this->setMultiUnitFieldUnit($field, $this->getMultiUnitFieldSelectedUnit($field));
-    }
-
-    /**
-     * Determine if a set mutator exists for an attribute.
-     *
-     * @param string $key
-     *
-     * @return bool
-     */
-    public function hasSetMutator($key)
-    {
-        if ($this->isMultiUnitField($key)) {
-            return true;
-        }
-
-        return parent::hasSetMutator($key);
-    }
-
-    /**
-     * Set the value of an attribute using its mutator.
-     *
-     * @param string $key
-     * @param mixed  $value
-     *
-     * @throws NotSupportedMultiUnitField
-     *
-     * @return mixed
-     */
-    protected function setMutatedAttributeValue($key, $value)
-    {
-        if ($this->isMultiUnitField($key)) {
-            $value = $this->processMultiUnitFieldChanges($key, $value);
-            $this->attributes[$key] = $value;
-
-            if (parent::hasSetMutator($key)) {
-                return parent::setMutatedAttributeValue($key, $value);
-            }
-
-            return $value;
-        }
-
-        parent::setMutatedAttributeValue($key, $value);
-    }
-
-    /**
-     * Detect changes and set proper base value.
-     *
-     * @param $field
-     * @param $value
-     *
-     * @throws NotSupportedMultiUnitField
-     *
-     * @return mixed
-     */
-    private function processMultiUnitFieldChanges($field, $value)
-    {
-        if(!is_null($value)) {
-            $existingConversionData = $this->getMultiUnitExistingConversionData($field);
-            if (!is_null($existingConversionData)) {
-                $inputUnit = $this->getMultiUnitFieldUnit($field);
-                //change existing value only in case if new value doesn't match with stored conversion table or not exists
-                if (!isset(
-                        $existingConversionData->{$inputUnit->getId()}
-                    ) || $value != $existingConversionData->{$inputUnit->getId()}) {
-                    $this->resetMultiUnitFieldUnit($field);
-
-                    return (new $inputUnit($value))->as($this->getMultiUnitFieldDefaultUnit($field));
-                } elseif ($value == $existingConversionData->{$inputUnit->getId()}) {
-                    //forget changes if value actually isn't changed
-                    $this->resetMultiUnitFieldUnit($field);
-                    $originalValue = $existingConversionData->{$this->getMultiUnitFieldDefaultUnit($field)->getId()};
-                    $this->attributes[$field] = $originalValue;
-                    $this->syncOriginalAttribute($field);
-
-                    return $originalValue;
-                }
-                $this->resetMultiUnitFieldUnit($field);
-            }
-        }
-
-        return $value;
-    }
-
-    /**
-     * Determine if a get mutator exists for an attribute.
-     *coo.
-     *
-     * @param string $key
-     *
-     * @return bool
-     */
-    public function hasGetMutator($key)
-    {
-        if ($this->isMultiUnitField($key) && isset($this->{$key})) {
-            return true;
-        }
-
-        return parent::hasGetMutator($key);
-    }
-
-    /**
-     * Get the value of an attribute using its mutator.
-     *
-     * @param string $key
-     * @param mixed  $value
-     *
-     * @throws NotSupportedMultiUnitField
-     *
-     * @return mixed
-     */
-    public function mutateAttribute($key, $value)
-    {
-        if ($this->isMultiUnitField($key)) {
-            $requestedUnit = $this->getMultiUnitFieldUnit($key);
-
-            $value = $this->getMultiUnitFieldValue($key, new $requestedUnit());
-            if (parent::hasGetMutator($key)) {
-                return parent::mutateAttribute($key, $value);
-            }
-
-            return $value;
-        }
-
-        return parent::mutateAttribute($key, $value);
     }
 }
