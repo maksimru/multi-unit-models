@@ -279,5 +279,4 @@ trait MultiUnitSupport
     {
         return $preferDefault ? $this->getMultiUnitFieldDefaultUnit($field) : $this->getMultiUnitFieldSelectedUnit($field);
     }
-
 }
