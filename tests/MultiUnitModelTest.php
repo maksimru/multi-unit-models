@@ -95,6 +95,7 @@ class MultiUnitModelTest extends TestCase
         $this->assertEquals(1, $model->height);
         $this->assertEquals(1, $model->getMultiUnitFieldValue('height', (new Mile())));
         $this->assertEquals(1.61, $model->getMultiUnitFieldValue('height', (new Kilometre())));
+        $this->assertEquals(1.61, DB::table('vehicles')->where($model->getKeyName(), '=', $model->getKey())->get()->first()->height);
     }
 
     /** @test
@@ -111,6 +112,7 @@ class MultiUnitModelTest extends TestCase
         $this->assertEquals('km', $model->getMultiUnitFieldDefaultUnit('height')->getId());
         $this->assertEquals(5, $model->fuel_consumption_city);
         $this->assertEquals('L/100km', $model->getMultiUnitFieldDefaultUnit('fuel_consumption_city')->getId());
+        $this->assertEquals(0.5, DB::table('vehicles')->where($model->getKeyName(), '=', $model->getKey())->get()->first()->height);
     }
 
     /** @test
@@ -224,6 +226,24 @@ class MultiUnitModelTest extends TestCase
         $this->assertEquals(0.62, $model->height);
         $this->assertEquals(0.62, $model->getMultiUnitFieldValue('height', (new Mile())));
         $this->assertEquals(1, $model->getMultiUnitFieldValue('height', (new Kilometre())));
+    }
+
+    /** @test
+     *  @depends  modelCreationTest
+     *
+     *  @param  $model_id
+     *
+     *  @throws Exception
+     */
+    public function validateInputConsistencyTest()
+    {
+        $model = $this->createStubModel();
+        $model->setMultiUnitFieldSelectedUnit('fuel_consumption_city', 'mi/l');
+        $model->fuel_consumption_city = 20;
+        $model->save();
+        $this->assertEquals(20, $model->fuel_consumption_city);
+        $this->assertEquals('mi/l', $model->getMultiUnitFieldSelectedUnit('fuel_consumption_city')->getId());
+        $this->assertEquals(3.11, DB::table('vehicles')->where($model->getKeyName(), '=', $model->getKey())->get()->first()->fuel_consumption_city);
     }
 
     /** @test

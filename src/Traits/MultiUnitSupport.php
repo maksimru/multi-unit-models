@@ -40,7 +40,7 @@ trait MultiUnitSupport
                             $options['supported_units']
                         )
                     );
-                    $model->{$unitBasedColumn} = $model->processMultiUnitFieldChanges(
+                    $model->attributes[$unitBasedColumn] = $model->processMultiUnitFieldChanges(
                         $unitBasedColumn,
                         $model->{$unitBasedColumn}
                     );
@@ -52,13 +52,19 @@ trait MultiUnitSupport
              * @var Model|MultiUnitSupport $model
              */
             foreach (Arr::only($model->getMultiUnitColumns(), array_keys($model->getDirty())) as $unitBasedColumn => $options) {
+                $newValue = $model->attributes[$unitBasedColumn];
+                $newValueInDefaultUnits = $model->processMultiUnitFieldChanges(
+                    $unitBasedColumn,
+                    $newValue
+                );
                 $model->{$unitBasedColumn.$model->getUnitConversionDataPostfix()} = json_encode(
                     $model->calculateMultiUnitConversionData(
-                        $model->getDirty()[$unitBasedColumn],
-                        $model->getMultiUnitFieldUnit($unitBasedColumn, true),
+                        $newValue,
+                        $model->getMultiUnitFieldUnit($unitBasedColumn),
                         $options['supported_units']
                     )
                 );
+                $model->attributes[$unitBasedColumn] = $newValueInDefaultUnits;
             }
         });
     }
@@ -279,4 +285,5 @@ trait MultiUnitSupport
     {
         return $preferDefault ? $this->getMultiUnitFieldDefaultUnit($field) : $this->getMultiUnitFieldSelectedUnit($field);
     }
+
 }

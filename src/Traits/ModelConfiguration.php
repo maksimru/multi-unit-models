@@ -50,22 +50,6 @@ trait ModelConfiguration
     }
 
     /**
-     * Determine if a set mutator exists for an attribute.
-     *
-     * @param string $key
-     *
-     * @return bool
-     */
-    public function hasSetMutator($key)
-    {
-        if ($this->isMultiUnitField($key)) {
-            return true;
-        }
-
-        return parent::hasSetMutator($key);
-    }
-
-    /**
      * Determine if a get mutator exists for an attribute.
      *coo.
      *
@@ -121,31 +105,6 @@ trait ModelConfiguration
     }
 
     /**
-     * Set the value of an attribute using its mutator.
-     *
-     * @param string $key
-     * @param mixed  $value
-     *
-     * @throws NotSupportedMultiUnitField
-     *
-     * @return mixed
-     */
-    protected function setMutatedAttributeValue($key, $value)
-    {
-        if ($this->isMultiUnitField($key)) {
-            $value = $this->processMultiUnitFieldChanges($key, $value);
-
-            if (parent::hasSetMutator($key)) {
-                return parent::setMutatedAttributeValue($key, $value);
-            }
-
-            return $value;
-        }
-
-        parent::setMutatedAttributeValue($key, $value);
-    }
-
-    /**
      * Detect changes and set proper database value
      *
      * @param $field
@@ -174,7 +133,7 @@ trait ModelConfiguration
                     $this->syncOriginalAttribute($field);
                 }
 
-                return $value;
+                return $defaultUnitValue;
             }
         }
 
