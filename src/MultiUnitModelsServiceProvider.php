@@ -25,10 +25,11 @@ class MultiUnitModelsServiceProvider extends ServiceProvider
             }
         }
         Validator::extend('supported_units', function ($attribute, $value, $parameters, $validator) {
-            if (1 != count($parameters)) {
-                throw new Exception('supported_units validator requires exact one parameter');
+            if (2 != count($parameters)) {
+                throw new Exception('supported_units validator requires exact 2 parameters');
             }
             $modelClass = $parameters[0];
+            $unitField = $parameters[1];
             /**
              * @var $model MultiUnitSupport
              */
@@ -41,7 +42,7 @@ class MultiUnitModelsServiceProvider extends ServiceProvider
                 $unit = new $unitClass();
 
                 return $unit->getId();
-            }, $model->getMultiUnitFieldSupportedUnits(substr($attribute, 0, -1 * strlen($model->getUnitAttributePostfix())))));
+            }, $model->getMultiUnitFieldSupportedUnits($unitField)));
         });
     }
 

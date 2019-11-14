@@ -101,19 +101,20 @@ $model = Vehicle::create([
 ]);
 // fuel_consumption_city is set to 5 L/100Km
 
-$model = Vehicle::create([
+$model = Vehicle::selectedUnits([
+    'fuel_consumption_city' => 'mpg'
+])->create([
     'name' => 'test',
     'fuel_consumption_city' => '5',
-    'fuel_consumption_city_units' => 'mpg'
 ]);
-// fuel_consumption_city is set to 5 mpg and DB will have fuel_consumption_city 47.04 (default units L/100Km) as well as $model->fuel_consumption_city will return 47.04
+// fuel_consumption_city is set to 5 mpg and DB will have fuel_consumption_city 47.04 (default units L/100Km), $model->fuel_consumption_city will return 5 (MPG)
 
 $model->update([
     'fuel_consumption_city' => '1',
-    'fuel_consumption_city_units' => 'mpg'
 ]);
-// fuel_consumption_city is set to 1 mpg and DB will have fuel_consumption_city 47.04 (default units L/100Km) as well as $model->fuel_consumption_city will return 47.04
+// fuel_consumption_city is set to 1 mpg and DB will have fuel_consumption_city 235.215 (default units L/100Km), $model->fuel_consumption_city will return 1 (MPG)
 
+$model->setMultiUnitFieldSelectedUnit('fuel_consumption_city', 'L/100km');
 $model->update([
     'fuel_consumption_city' => '1',
 ]);
@@ -128,7 +129,7 @@ You can use supported_units validation rule with model class as parameter
 $validation = Validator::make([
     'fuel_consumption_city_units' => 'mpg'
 ], [
-    'fuel_consumption_city_units' => 'supported_units:'.Vehicle::class
+    'fuel_consumption_city_units' => 'supported_units:'.Vehicle::class.',fuel_consumption_city'
 ]);
 //validation pass
 ```

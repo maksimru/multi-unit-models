@@ -2,6 +2,7 @@
 
 namespace MaksimM\MultiUnitModels\Tests;
 
+use DB;
 use Exception;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Validator;
@@ -38,9 +39,9 @@ class MultiUnitModelTest extends TestCase
     public function validatorFailTest()
     {
         $validation = Validator::make([
-            'fuel_consumption_city_units' => 'e',
+            'fuel_consumption_city' => 'e',
         ], [
-            'fuel_consumption_city_units' => 'supported_units:'.Vehicle::class,
+            'fuel_consumption_city' => 'supported_units:'.Vehicle::class.',fuel_consumption_city',
         ]);
         $this->assertTrue($validation->fails());
     }
@@ -55,9 +56,9 @@ class MultiUnitModelTest extends TestCase
     public function validatorPassTest()
     {
         $validation = Validator::make([
-            'fuel_consumption_city_units' => 'mpg',
+            'fuel_consumption_city' => 'mpg',
         ], [
-            'fuel_consumption_city_units' => 'supported_units:'.Vehicle::class,
+            'fuel_consumption_city' => 'supported_units:'.Vehicle::class.',fuel_consumption_city',
         ]);
         $this->assertFalse($validation->fails());
     }
@@ -83,16 +84,18 @@ class MultiUnitModelTest extends TestCase
         /**
          * @var $model Vehicle
          */
-        $model = Vehicle::create([
+        $model = Vehicle::selectedUnits([
+            'height' => 'mi',
+        ])->create([
             'name'                  => 'test',
-            'height_units'          => 'mi',
             'height'                => '1',
             'fuel_consumption_city' => '5',
         ]);
         $this->assertInstanceOf(Vehicle::class, $model);
-        $this->assertEquals(1.61, $model->height);
+        $this->assertEquals(1, $model->height);
         $this->assertEquals(1, $model->getMultiUnitFieldValue('height', (new Mile())));
         $this->assertEquals(1.61, $model->getMultiUnitFieldValue('height', (new Kilometre())));
+        $this->assertEquals(1.61, DB::table('vehicles')->where($model->getKeyName(), '=', $model->getKey())->get()->first()->height);
     }
 
     /** @test
@@ -109,6 +112,7 @@ class MultiUnitModelTest extends TestCase
         $this->assertEquals('km', $model->getMultiUnitFieldDefaultUnit('height')->getId());
         $this->assertEquals(5, $model->fuel_consumption_city);
         $this->assertEquals('L/100km', $model->getMultiUnitFieldDefaultUnit('fuel_consumption_city')->getId());
+        $this->assertEquals(0.5, DB::table('vehicles')->where($model->getKeyName(), '=', $model->getKey())->get()->first()->height);
     }
 
     /** @test
@@ -186,7 +190,23 @@ class MultiUnitModelTest extends TestCase
         $this->assertEquals('test2', $model->name);
         $this->assertEquals(10, $model->height);
         $this->assertEquals('mi', $model->getMultiUnitFieldSelectedUnit('height')->getId());
-        $this->assertEquals(16.09, \DB::table('vehicles')->where($model->getKeyName(), '=', $model->getKey())->get()->first()->height);
+        $this->assertEquals(16.09, DB::table('vehicles')->where($model->getKeyName(), '=', $model->getKey())->get()->first()->height);
+    }
+
+    /** @test
+     *  @depends  modelCreationTest
+     *
+     *  @throws Exception
+     */
+    public function validateModelUpdateWithAnotherUnitAndSelectedUnitTest()
+    {
+        $model = $this->createStubModel();
+        $model->setMultiUnitFieldSelectedUnit('height', 'mi');
+        $model->update(['height' => 5, 'name' => 'test2']);
+        $this->assertEquals('test2', $model->name);
+        $this->assertEquals(5, $model->height);
+        $this->assertEquals(5, $model->getMultiUnitFieldValue('height', (new Mile())));
+        $this->assertEquals(8.05, $model->getMultiUnitFieldValue('height', (new Kilometre())));
     }
 
     /** @test
@@ -202,36 +222,28 @@ class MultiUnitModelTest extends TestCase
         $this->assertEquals(1, $model->height);
         $this->assertEquals(0.62, $model->getMultiUnitFieldValue('height', (new Mile())));
         $this->assertEquals(1, $model->getMultiUnitFieldValue('height', (new Kilometre())));
+        $model->setMultiUnitFieldSelectedUnit('height', 'mi');
+        $this->assertEquals(0.62, $model->height);
+        $this->assertEquals(0.62, $model->getMultiUnitFieldValue('height', (new Mile())));
+        $this->assertEquals(1, $model->getMultiUnitFieldValue('height', (new Kilometre())));
     }
 
     /** @test
      *  @depends  modelCreationTest
      *
-     *  @throws Exception
-     */
-    public function validateModelUpdateWithAnotherUnitTest()
-    {
-        $model = $this->createStubModel();
-        $model->update(['height' => 1, 'name' => 'test2', 'height_units' => 'mi']);
-        $this->assertEquals('test2', $model->name);
-        $this->assertEquals(1.61, $model->height);
-        $this->assertEquals(1, $model->getMultiUnitFieldValue('height', (new Mile())));
-        $this->assertEquals(1.61, $model->getMultiUnitFieldValue('height', (new Kilometre())));
-    }
-
-    /** @test
-     *  @depends  modelCreationTest
+     *  @param  $model_id
      *
      *  @throws Exception
      */
-    public function validateModelUpdateWithAnotherUnitReorderedTest()
+    public function validateInputConsistencyTest()
     {
         $model = $this->createStubModel();
-        $model->update(['height_units' => 'mi', 'height' => 1, 'name' => 'test2']);
-        $this->assertEquals('test2', $model->name);
-        $this->assertEquals(1.61, $model->height);
-        $this->assertEquals(1, $model->getMultiUnitFieldValue('height', (new Mile())));
-        $this->assertEquals(1.61, $model->getMultiUnitFieldValue('height', (new Kilometre())));
+        $model->setMultiUnitFieldSelectedUnit('fuel_consumption_city', 'mi/l');
+        $model->fuel_consumption_city = 20;
+        $model->save();
+        $this->assertEquals(20, $model->fuel_consumption_city);
+        $this->assertEquals('mi/l', $model->getMultiUnitFieldSelectedUnit('fuel_consumption_city')->getId());
+        $this->assertEquals(3.11, DB::table('vehicles')->where($model->getKeyName(), '=', $model->getKey())->get()->first()->fuel_consumption_city);
     }
 
     /** @test
@@ -242,24 +254,9 @@ class MultiUnitModelTest extends TestCase
     public function validateModelUpdateWithAnotherUnitSameValueTest()
     {
         $model = $this->createStubModel();
-        $model->update(['height_units' => 'mi', 'height' => 0.31]);
-        $this->assertEquals(0.5, $model->height);
-    }
-
-    /** @test
-     *  @depends  modelCreationTest
-     *
-     *  @throws Exception
-     */
-    public function validateModelUpdateWithAnotherUnitInlineTest()
-    {
-        $model = $this->createStubModel();
-        $model->height_units = 'mi';
-        $model->update(['height' => 1, 'name' => 'test2']);
-        $this->assertEquals('test2', $model->name);
-        $this->assertEquals(1.61, $model->height);
-        $this->assertEquals(1, $model->getMultiUnitFieldValue('height', (new Mile())));
-        $this->assertEquals(1.61, $model->getMultiUnitFieldValue('height', (new Kilometre())));
+        $model->setMultiUnitFieldSelectedUnit('height', 'mi');
+        $model->update(['height' => 0.31]);
+        $this->assertEquals(0.31, $model->height);
     }
 
     /** @test
