@@ -98,7 +98,8 @@ trait MultiUnitSupport
         });
     }
 
-    private function forgetUnitsInput(){
+    private function forgetUnitsInput()
+    {
         //prevent saving of unit columns
         foreach ($this->getUnitConversionUnitColumns() as $unitColumn) {
             if (isset($this->attributes[$unitColumn])) {
@@ -116,8 +117,9 @@ trait MultiUnitSupport
      */
     private function calculateMultiUnitConversionData($value, AbstractUnit $unit, $requiredUnits)
     {
-        if(is_null($value))
-            return null;
+        if (is_null($value)) {
+            return;
+        }
 
         $conversionData = [];
         foreach ($requiredUnits as $requiredUnitClass) {
@@ -424,7 +426,7 @@ trait MultiUnitSupport
      */
     private function processMultiUnitFieldChanges($field, $value)
     {
-        if(!is_null($value)) {
+        if (!is_null($value)) {
             $existingConversionData = $this->getMultiUnitExistingConversionData($field);
             if (!is_null($existingConversionData)) {
                 $inputUnit = $this->getMultiUnitFieldUnit($field);
