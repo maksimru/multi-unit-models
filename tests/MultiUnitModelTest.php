@@ -85,7 +85,7 @@ class MultiUnitModelTest extends TestCase
          * @var $model Vehicle
          */
         $model = Vehicle::selectedUnits([
-            'height' => 'mi'
+            'height' => 'mi',
         ])->create([
             'name'                  => 'test',
             'height'                => '1',

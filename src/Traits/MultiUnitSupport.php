@@ -10,7 +10,6 @@ use UnitConverter\Unit\AbstractUnit;
 
 trait MultiUnitSupport
 {
-
     use ModelConfiguration;
 
     protected $unitConversionDataPostfix = '_ucd';
@@ -72,8 +71,9 @@ trait MultiUnitSupport
      */
     private function calculateMultiUnitConversionData($value, AbstractUnit $unit, $requiredUnits)
     {
-        if(is_null($value))
-            return null;
+        if (is_null($value)) {
+            return;
+        }
 
         $conversionData = [];
         foreach ($requiredUnits as $requiredUnitClass) {
