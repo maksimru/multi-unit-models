@@ -1,14 +1,11 @@
 <?php
 
-
 namespace MaksimM\MultiUnitModels\Traits;
-
 
 use MaksimM\MultiUnitModels\Exceptions\NotSupportedMultiUnitField;
 
 trait ModelConfiguration
 {
-
     /**
      * @return array
      */
@@ -35,10 +32,12 @@ trait ModelConfiguration
     /**
      * Create a new instance of the given model.
      *
-     * @param  array  $attributes
-     * @param  bool  $exists
-     * @return static
+     * @param array $attributes
+     * @param bool  $exists
+     *
      * @throws NotSupportedMultiUnitField
+     *
+     * @return static
      */
     public function newInstance($attributes = [], $exists = false)
     {
@@ -46,6 +45,7 @@ trait ModelConfiguration
         foreach ($this->getMultiUnitColumns() as $unitBasedColumn => $options) {
             $model->setMultiUnitFieldSelectedUnit($unitBasedColumn, $this->getMultiUnitFieldSelectedUnit($unitBasedColumn)->getId());
         }
+
         return $model;
     }
 
@@ -105,7 +105,7 @@ trait ModelConfiguration
     }
 
     /**
-     * Detect changes and set proper database value
+     * Detect changes and set proper database value.
      *
      * @param $field
      * @param $value
@@ -116,7 +116,7 @@ trait ModelConfiguration
      */
     private function processMultiUnitFieldChanges($field, $value)
     {
-        if(!is_null($value)) {
+        if (!is_null($value)) {
             $existingConversionData = $this->getMultiUnitExistingConversionData($field);
             if (!is_null($existingConversionData)) {
                 $inputUnit = $this->getMultiUnitFieldUnit($field);
